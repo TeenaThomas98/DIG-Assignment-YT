@@ -66,46 +66,6 @@ dig_df$HOSP <- factor(dig_df$HOSP, levels = c(0, 1), labels = c("No", "Yes"))
 
 print(dig_df)
 
-
-
-
-
-
+#shiny
 dig_data <- dig_df
-
-ui <- fluidPage(
-  titlePanel("Digitalis Investigation Group Data Explorer"),
-  sidebarLayout(
-    sidebarPanel(
-      # Add input controls relevant to your data
-      selectInput(inputId = "sex", label = "Select Sex:", choices = unique(dig_data$SEX), multiple = FALSE),
-      sliderInput("age", "Select Age Range:", min = min(dig_data$AGE, na.rm = TRUE), max = max(dig_data$AGE, na.rm = TRUE), value = c(50, 60)),
-      # ... add more filters if needed ...
-    ),
-    mainPanel(
-      plotOutput("plot1"),
-      dataTableOutput("table1")
-    )
-  )
-)
-
-server <- function(input, output) {
-  
-  dig_filtered <- reactive({
-    dig_data %>%
-      filter(SEX == input$sex) %>%
-      filter(AGE >= input$age[1] & AGE <= input$age[2])
-    # ... add more filters if needed ...
-  })
-  
-  output$plot1 <- renderPlot({ 
-    ggplot(data = dig_filtered(), aes(x = BMI, y = AGE)) +
-      geom_point()
-  })
-  
-  output$table1 <- renderDataTable({ 
-    dig_filtered()
-  })
-}
-
 shinyApp(ui, server)
