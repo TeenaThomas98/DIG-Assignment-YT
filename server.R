@@ -1,7 +1,7 @@
 dig_data <- dig_df
 
 
-# Define server
+# Define the server
 server <- function(input, output) {
   output$summaryTable <- renderDataTable({
     head(dig_df)
