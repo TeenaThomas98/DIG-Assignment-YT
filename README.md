@@ -1,4 +1,4 @@
-#here is a try
+#install packages
 if (!require("janitor")) install.packages("janitor")
 if (!require("lubridate")) install.packages("lubridate")
 if (!require("shiny")) install.packages("shiny")
@@ -25,9 +25,6 @@ library(shinythemes)
 dig_df <- read.csv("DIG.csv") %>%
   janitor::clean_names()
 dig_df
-
-# Read the CSV file
-dig_df <- read_csv("DIG.csv")
 
 # Select the specified columns
 selected_columns <- dig_df %>%
