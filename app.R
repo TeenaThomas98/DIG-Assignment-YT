@@ -1,4 +1,5 @@
 
+#necessary packages
 if (!require("janitor")) install.packages("janitor")
 if (!require("lubridate")) install.packages("lubridate")
 if (!require("shiny")) install.packages("shiny")
@@ -6,8 +7,8 @@ if (!require("tidyverse")) install.packages("tidyverse")
 if (!require("palmerpenguins")) install.packages("palmerpenguins")
 if (!require("DynNom")) install.packages("DynNom")
 if (!require("shinydashboard")) install.packages("shinydashboard")
+if (!require("DT")) install.packages("DT")
 
-#Load necessary packages
 library(janitor)
 library(lubridate)
 library(tidyverse)
@@ -15,41 +16,39 @@ library(shiny)
 library(palmerpenguins)
 library(dplyr)
 library(readr)
-library(dplyr)
 library(forcats)
 library(ggplot2)
 library(reshape2)
 library(shinythemes)
+library(DT)
+library(shinydashboard)
 
 #Import the required data for analysis
 dig_df <- read.csv("DIG.csv") %>%
   janitor::clean_names()
 dig_df
 
-# Select the specified columns
-selected_columns <- dig_df %>%
-  select(ID, TRTMT, AGE, SEX, BMI, KLEVEL, CREAT, DIABP, SYSBP, HYPERTEN, CVD, WHF, DIG, HOSP, HOSPDAYS, DEATH, DEATHDAY)
-
 # Convert columns to the most relevant data type
-selected_columns$ID <- as.integer(selected_columns$ID)
-selected_columns$TRTMT <- as.integer(selected_columns$TRTMT)
-selected_columns$AGE <- as.integer(selected_columns$AGE)
-selected_columns$SEX <- as.integer(selected_columns$SEX)
-selected_columns$BMI <- as.numeric(selected_columns$BMI)
-selected_columns$KLEVEL <- as.numeric(selected_columns$KLEVEL)
-selected_columns$CREAT <- as.numeric(selected_columns$CREAT)
-selected_columns$DIABP <- as.integer(selected_columns$DIABP)
-selected_columns$SYSBP <- as.integer(selected_columns$SYSBP)
-selected_columns$HYPERTEN <- as.integer(selected_columns$HYPERTEN)
-selected_columns$CVD <- as.integer(selected_columns$CVD)
-selected_columns$WHF <- as.integer(selected_columns$WHF)
-selected_columns$DIG <- as.integer(selected_columns$DIG)
-selected_columns$HOSP <- as.integer(selected_columns$HOSP)
-selected_columns$HOSPDAYS <- as.integer(selected_columns$HOSPDAYS)
-selected_columns$DEATH <- as.integer(selected_columns$DEATH)
-selected_columns$DEATHDAY <- as.integer(selected_columns$DEATHDAY)
-
-
+dig_df <- dig_df %>%
+  mutate(
+    ID = as.integer(ID),
+    TRTMT = as.integer(TRTMT),
+    AGE = as.integer(AGE),
+    SEX = as.integer(SEX),
+    BMI = as.numeric(BMI),
+    KLEVEL = as.numeric(KLEVEL),
+    CREAT = as.numeric(CREAT),
+    DIABP = as.integer(DIABP),
+    SYSBP = as.integer(SYSBP),
+    HYPERTEN = as.integer(HYPERTEN),
+    CVD = as.integer(CVD),
+    WHF = as.integer(WHF),
+    DIG = as.integer(DIG),
+    HOSP = as.integer(HOSP),
+    HOSPDAYS = as.integer(HOSPDAYS),
+    DEATH = as.integer(DEATH),
+    DEATHDAY = as.integer(DEATHDAY)
+  )
 
 
 

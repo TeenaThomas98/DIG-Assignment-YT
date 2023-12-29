@@ -1,72 +1,58 @@
 dig_data <- dig_df
 
 
-# Define the server
-server <- function(input, output) {
-  output$summaryTable <- renderDataTable({
-    head(dig_df)
+# Server Definition
+server <- function(input, output, session) {
+  
+  
+  # Reactive expression to filter the dataset
+  filtered_data <- reactive({
+    invalidateLater(2000, session)
+    req(input$refresh)
+    data <- dig_df
+    if (input$sex != "All") {
+      data <- data[data$SEX == ifelse(input$sex == "Male", 1, 2), ]
+    }
+    if (input$treatment_group != "All") {
+      data <- data[data$TRTMT == input$treatment_group, ]
+    }
+    data <- data[data$AGE >= input$age_range[1] & data$AGE <= input$age_range[2], ]
+    return(data)
   })
   
-  output$mortalityPlot <- renderPlot({
-    ggplot(dig_df, aes(x = factor(TRTMT), fill = factor(DEATH))) +
-      geom_bar(position = "fill") +
-      labs(x = "Treatment Group", y = "Proportion", fill = "Death") +
-      scale_fill_brewer(palette = "Set1")
+  # Plot for treatment summary
+  output$treatmentPlot <- renderPlot({
+    ggplot(filtered_data(), aes(x = TRTMT)) +
+      geom_bar() +
+      labs(title = "Treatment Summary", x = "Treatment Group", y = "Count")
   })
   
-  output$hospitalizationPlot <- renderPlot({
-    ggplot(dig_df, aes(x = factor(TRTMT), fill = factor(HOSP))) +
-      geom_bar(position = "fill") +
-      labs(x = "Treatment Group", y = "Proportion", fill = "Hospitalization") +
-      scale_fill_brewer(palette = "Set1")
+  # Table for baseline characteristics
+  output$baselineTable <- renderDT({
+    datatable(filtered_data() %>%
+                select(all_of(input$variables)))
   })
   
-  output$selectedPlot <- renderPlot({
-    plot_data <- switch(input$plotChoice,
-                        "Age vs Ejection Fraction" = {
-                          ggplot(dig_df, aes(x = AGE, y = EJF_PER)) +
-                            geom_point() +
-                            labs(x = "Age", y = "Ejection Fraction", title = "Age vs Ejection Fraction")
-                        },
-                        "Age vs BMI" = {
-                          ggplot(dig_df, aes(x = AGE, y = BMI)) +
-                            geom_point() +
-                            labs(x = "Age", y = "BMI", title = "Age vs BMI")
-                        },
-                        "Age vs Serum Potassium Level" = {
-                          ggplot(dig_df, aes(x = AGE, y = KLEVEL)) +
-                            geom_point() +
-                            labs(x = "Age", y = "Serum Potassium Level", title = "Age vs Serum Potassium Level")
-                        },
-                        "Age vs Serum Creatinine" = {
-                          ggplot(dig_df, aes(x = AGE, y = CREAT)) +
-                            geom_point() +
-                            labs(x = "Age", y = "Serum Creatinine", title = "Age vs Serum Creatinine")
-                        },
-                        "Age vs Heart Rate" = {
-                          ggplot(dig_df, aes(x = AGE, y = HEARTRTE)) +
-                            geom_point() +
-                            labs(x = "Age", y = "Heart Rate", title = "Age vs Heart Rate")
-                        },
-                        "Age vs Diastolic BP" = {
-                          ggplot(dig_df, aes(x = AGE, y = DIABP)) +
-                            geom_point() +
-                            labs(x = "Age", y = "Diastolic BP", title = "Age vs Diastolic BP")
-                        },
-                        "Age vs Systolic BP" = {
-                          ggplot(dig_df, aes(x = AGE, y = SYSBP)) +
-                            geom_point() +
-                            labs(x = "Age", y = "Systolic BP", title = "Age vs Systolic BP")
-                        },
-                        "Age vs NYHA Functional Class" = {
-                          ggplot(dig_df, aes(x = AGE, y = FUNCTCLS)) +
-                            geom_point() +
-                            labs(x = "Age", y = "NYHA Functional Class", title = "Age vs NYHA Functional Class")
-                        }
-    )
-    plot_data
+  # Plot for variable distributions
+  output$distributionPlot <- renderPlot({
+    if (length(input$variables) > 0) {
+      ggplot(filtered_data(), aes_string(x = input$variables[1])) +
+        geom_histogram(binwidth = 1) +
+        labs(title = paste("Distribution of", input$variables[1]))
+    }
+  })
+  
+  # Statistical summary
+  output$statSummary <- renderPrint({
+    req(input$variables)
+    summary(filtered_data()[, input$variables])
+  })
+  
+  # Refresh action
+  observeEvent(input$refresh, {
+    # This can be used to trigger reactive expressions
   })
 }
 
-  
-  # add more
+# Run the app
+shinyApp(ui = ui, server = server)
