@@ -1,21 +1,29 @@
 dig_data <- dig_df
 
+
 server <- function(input, output) {
-  dig_filtered <- reactive({
-    data <- dig_data
-    if (input$sex != "All") {
-      data <- data %>% filter(SEX == input$sex)
-    }
-    data %>% filter(AGE >= input$age[1] & AGE <= input$age[2])
+  # summary
+  output$treatment_summary <- renderPrint({
+    dig_data %>% 
+      group_by(TRTMT) %>% 
+      summarise(Count = n(), Proportion = n() / nrow(dig_data))
   })
   
-  output$plot1 <- renderPlot({ 
-    ggplot(data = dig_filtered(), aes(x = BMI, y = AGE)) +
-      geom_point() +
-      labs(title = "Age vs BMI", x = "BMI", y = "Age")
+  # Mortality Analysis
+  output$mortality_plot <- renderPlot({
+    ggplot(dig_data, aes(x = factor(TRTMT), fill = factor(DEATH))) +
+      geom_bar(position = "fill") +
+      labs(x = "Treatment Group", y = "Proportion", fill = "Death") +
+      scale_fill_brewer(palette = "Set1")
   })
   
-  output$table1 <- renderDataTable({ 
-    dig_filtered()
-  }, options = list(pageLength = 10)) # 添加分页选项
+  # Hospitalization Analysis
+  output$hospitalization_plot <- renderPlot({
+    ggplot(dig_data, aes(x = factor(TRTMT), fill = factor(HOSP))) +
+      geom_bar(position = "fill") +
+      labs(x = "Treatment Group", y = "Proportion", fill = "Hospitalization") +
+      scale_fill_brewer(palette = "Set1")
+  })
+  
+  # add more
 }
