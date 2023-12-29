@@ -6,7 +6,7 @@ ui <- dashboardPage(
   dashboardHeader(title = "DIG Data Analysis"),
   dashboardSidebar(
     radioButtons(inputId = "sex", label = "Select Patient Sex:", choices = c("All", "Male", "Female")),
-    selectInput(inputId = "treatment_group", label = "Select Treatment Group:", choices = c("All", "Placebo",  "Treatment"), multiple = FALSE),
+    selectInput(inputId = "treatment_group", label = "Select Treatment Group:", choices = c("All", "Placebo", "Treatment"), multiple = FALSE),
     sliderInput("age_range", "Select Age Range:", min = 0, max = 100, value = c(20, 40)),
     checkboxGroupInput(inputId = "variables", label = "Select Variables to Display:", choices = c("AGE", "SEX", "BMI", "TRTMT"), selected = c("AGE", "SEX", "BMI", "TRTMT")),
     actionButton("refresh", "Refresh Data")
