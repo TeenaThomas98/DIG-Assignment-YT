@@ -1,4 +1,3 @@
-
 if (!require("janitor")) install.packages("janitor")
 if (!require("lubridate")) install.packages("lubridate")
 if (!require("shiny")) install.packages("shiny")
@@ -17,6 +16,9 @@ library(dplyr)
 library(readr)
 library(dplyr)
 library(forcats)
+library(ggplot2)
+library(reshape2)
+library(shinythemes)
 
 #Import the required data for analysis
 dig_df <- read.csv("DIG.csv") %>%
@@ -67,45 +69,119 @@ dig_df$HOSP <- factor(dig_df$HOSP, levels = c(0, 1), labels = c("No", "Yes"))
 print(dig_df)
 
 
-
-
-
-
-dig_data <- dig_df
-
+# Define UI
 ui <- fluidPage(
-  titlePanel("Digitalis Investigation Group Data Explorer"),
+  titlePanel("DIG Trial: Data Explorer"),
   sidebarLayout(
     sidebarPanel(
-      # Add input controls relevant to your data
-      selectInput(inputId = "sex", label = "Select Sex:", choices = unique(dig_data$SEX), multiple = FALSE),
-      sliderInput("age", "Select Age Range:", min = min(dig_data$AGE, na.rm = TRUE), max = max(dig_data$AGE, na.rm = TRUE), value = c(50, 60)),
-      # ... add more filters if needed ...
+      selectInput("plotChoice", "Choose Scatterplot", choices = c(
+        "Age vs Ejection Fraction",
+        "Age vs BMI",
+        "Age vs Serum Potassium Level",
+        "Age vs Serum Creatinine",
+        "Age vs Heart Rate",
+        "Age vs Diastolic BP",
+        "Age vs Systolic BP",
+        "Age vs NYHA Functional Class"
+      ))
     ),
     mainPanel(
-      plotOutput("plot1"),
-      dataTableOutput("table1")
+      tabsetPanel(
+        tabPanel("Data Summary",
+                 fluidRow(
+                   box(width = 12, title = "Data Summary", collapsible = TRUE, 
+                       dataTableOutput("summaryTable"))
+                 )
+        ),
+        tabPanel("Mortality Analysis",
+                 fluidRow(
+                   box(width = 12, title = "Mortality Analysis", collapsible = TRUE, 
+                       plotOutput("mortalityPlot"))
+                 )
+        ),
+        tabPanel("Hospitalization Analysis",
+                 fluidRow(
+                   box(width = 12, title = "Hospitalization Analysis", collapsible = TRUE, 
+                       plotOutput("hospitalizationPlot"))
+                 )
+        ),
+        tabPanel("Scatterplot Analysis",
+                 fluidRow(
+                   box(width = 12, title = "Scatterplot Analysis", collapsible = TRUE, 
+                       plotOutput("selectedPlot"))
+                 )
+        )
+      )
     )
   )
 )
 
+# Define server
 server <- function(input, output) {
-  
-  dig_filtered <- reactive({
-    dig_data %>%
-      filter(SEX == input$sex) %>%
-      filter(AGE >= input$age[1] & AGE <= input$age[2])
-    # ... add more filters if needed ...
+  output$summaryTable <- renderDataTable({
+    head(dig_df)
   })
-  
-  output$plot1 <- renderPlot({ 
-    ggplot(data = dig_filtered(), aes(x = BMI, y = AGE)) +
-      geom_point()
+
+  output$mortalityPlot <- renderPlot({
+    ggplot(dig_df, aes(x = factor(TRTMT), fill = factor(DEATH))) +
+      geom_bar(position = "fill") +
+      labs(x = "Treatment Group", y = "Proportion", fill = "Death") +
+      scale_fill_brewer(palette = "Set1")
   })
-  
-  output$table1 <- renderDataTable({ 
-    dig_filtered()
+
+  output$hospitalizationPlot <- renderPlot({
+    ggplot(dig_df, aes(x = factor(TRTMT), fill = factor(HOSP))) +
+      geom_bar(position = "fill") +
+      labs(x = "Treatment Group", y = "Proportion", fill = "Hospitalization") +
+      scale_fill_brewer(palette = "Set1")
+  })
+
+  output$selectedPlot <- renderPlot({
+    plot_data <- switch(input$plotChoice,
+                        "Age vs Ejection Fraction" = {
+                          ggplot(dig_df, aes(x = AGE, y = EJF_PER)) +
+                            geom_point() +
+                            labs(x = "Age", y = "Ejection Fraction", title = "Age vs Ejection Fraction")
+                        },
+                        "Age vs BMI" = {
+                          ggplot(dig_df, aes(x = AGE, y = BMI)) +
+                            geom_point() +
+                            labs(x = "Age", y = "BMI", title = "Age vs BMI")
+                        },
+                        "Age vs Serum Potassium Level" = {
+                          ggplot(dig_df, aes(x = AGE, y = KLEVEL)) +
+                            geom_point() +
+                            labs(x = "Age", y = "Serum Potassium Level", title = "Age vs Serum Potassium Level")
+                        },
+                        "Age vs Serum Creatinine" = {
+                          ggplot(dig_df, aes(x = AGE, y = CREAT)) +
+                            geom_point() +
+                            labs(x = "Age", y = "Serum Creatinine", title = "Age vs Serum Creatinine")
+                        },
+                        "Age vs Heart Rate" = {
+                          ggplot(dig_df, aes(x = AGE, y = HEARTRTE)) +
+                            geom_point() +
+                            labs(x = "Age", y = "Heart Rate", title = "Age vs Heart Rate")
+                        },
+                        "Age vs Diastolic BP" = {
+                          ggplot(dig_df, aes(x = AGE, y = DIABP)) +
+                            geom_point() +
+                            labs(x = "Age", y = "Diastolic BP", title = "Age vs Diastolic BP")
+                        },
+                        "Age vs Systolic BP" = {
+                          ggplot(dig_df, aes(x = AGE, y = SYSBP)) +
+                            geom_point() +
+                            labs(x = "Age", y = "Systolic BP", title = "Age vs Systolic BP")
+                        },
+                        "Age vs NYHA Functional Class" = {
+                          ggplot(dig_df, aes(x = AGE, y = FUNCTCLS)) +
+                            geom_point() +
+                            labs(x = "Age", y = "NYHA Functional Class", title = "Age vs NYHA Functional Class")
+                        }
+    )
+    plot_data
   })
 }
 
-shinyApp(ui, server)
+# Run the Shiny app
+shinyApp(ui = ui, server = server)

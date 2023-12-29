@@ -1,35 +1,48 @@
 dig_data <- dig_df
 
 
-ui <- dashboardPage(
-    dashboardHeader(title = "DIG Data Explorer"),
-    dashboardSidebar(
-      # 根据 DIG 数据添加适当的筛选器
-      selectInput(inputId = "treatment", label = "Select Treatment Group:", choices = unique(dig_data$TRTMT)),
-      sliderInput("age", "Select Age Range:", min = min(dig_data$AGE, na.rm = TRUE), max = max(dig_data$AGE, na.rm = TRUE), value = c(50, 60))
-      # 添加其他筛选器
+ui <- fluidPage(
+  titlePanel("DIG Trial: Data Explorer"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("plotChoice", "Choose Scatterplot", choices = c(
+        "Age vs Ejection Fraction",
+        "Age vs BMI",
+        "Age vs Serum Potassium Level",
+        "Age vs Serum Creatinine",
+        "Age vs Heart Rate",
+        "Age vs Diastolic BP",
+        "Age vs Systolic BP",
+        "Age vs NYHA Functional Class"
+      ))
     ),
-    dashboardBody(
-    tabBox(width = 12, id = "tabs",
-      tabPanel("Data Summary", 
-               fluidRow(box(width=12, title = "Data Summary", collapsible = TRUE, status = "warning", solidHeader = TRUE,
-            dataTableOutput("summaryTable")))
-      ),
-      tabPanel("Mortality Analysis", 
-               fluidRow(
-                box(width=12, title = "Mortality Analysis", collapsible = TRUE, status = "warning", solidHeader = TRUE,
-            plotOutput("mortalityPlot")) 
-               )
-      ),
-      tabPanel("Hospitalization Analysis", 
-               fluidRow(
-                box(width=12, title = "Hospitalization Analysis", collapsible = TRUE, status = "warning", solidHeader = TRUE,
-            plotOutput("hospitalizationPlot"))
-               )
-      ),
-      # add more
-      
+    mainPanel(
+      tabsetPanel(
+        tabPanel("Data Summary",
+                 fluidRow(
+                   box(width = 12, title = "Data Summary", collapsible = TRUE, 
+                       dataTableOutput("summaryTable"))
+                 )
+        ),
+        tabPanel("Mortality Analysis",
+                 fluidRow(
+                   box(width = 12, title = "Mortality Analysis", collapsible = TRUE, 
+                       plotOutput("mortalityPlot"))
+                 )
+        ),
+        tabPanel("Hospitalization Analysis",
+                 fluidRow(
+                   box(width = 12, title = "Hospitalization Analysis", collapsible = TRUE, 
+                       plotOutput("hospitalizationPlot"))
+                 )
+        ),
+        tabPanel("Scatterplot Analysis",
+                 fluidRow(
+                   box(width = 12, title = "Scatterplot Analysis", collapsible = TRUE, 
+                       plotOutput("selectedPlot"))
+                 )
+        )
+      )
     )
   )
 )
-
