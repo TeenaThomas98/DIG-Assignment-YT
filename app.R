@@ -26,9 +26,6 @@ dig_df <- read.csv("DIG.csv") %>%
   janitor::clean_names()
 dig_df
 
-# Read the CSV file
-dig_df <- read_csv("DIG.csv")
-
 # Select the specified columns
 selected_columns <- dig_df %>%
   select(ID, TRTMT, AGE, SEX, BMI, KLEVEL, CREAT, DIABP, SYSBP, HYPERTEN, CVD, WHF, DIG, HOSP, HOSPDAYS, DEATH, DEATHDAY)
@@ -52,8 +49,7 @@ selected_columns$HOSPDAYS <- as.integer(selected_columns$HOSPDAYS)
 selected_columns$DEATH <- as.integer(selected_columns$DEATH)
 selected_columns$DEATHDAY <- as.integer(selected_columns$DEATHDAY)
 
-# View the data types
-print(selected_columns)
+
 
 
 
@@ -67,7 +63,7 @@ dig_df$WHF <- factor(dig_df$WHF, levels = c(0, 1), labels = c("No", "Yes"))
 dig_df$DIG <- factor(dig_df$DIG, levels = c(0, 1), labels = c("No", "Yes"))
 dig_df$HOSP <- factor(dig_df$HOSP, levels = c(0, 1), labels = c("No", "Yes"))
 
-print(dig_df)
+
 
 #shiny
 dig_data <- dig_df
