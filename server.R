@@ -1,6 +1,7 @@
 dig_data <- dig_df
 
 
+# Define server
 server <- function(input, output) {
   output$summaryTable <- renderDataTable({
     head(dig_df)
@@ -66,5 +67,6 @@ server <- function(input, output) {
     plot_data
   })
 }
+
   
   # add more

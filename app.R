@@ -7,7 +7,7 @@ if (!require("palmerpenguins")) install.packages("palmerpenguins")
 if (!require("DynNom")) install.packages("DynNom")
 if (!require("shinydashboard")) install.packages("shinydashboard")
 
-
+#Load necessary package
 library(janitor)
 library(lubridate)
 library(tidyverse)
@@ -17,6 +17,9 @@ library(dplyr)
 library(readr)
 library(dplyr)
 library(forcats)
+library(ggplot2)
+library(reshape2)
+library(shinythemes)
 
 #Import the required data for analysis
 dig_df <- read.csv("DIG.csv") %>%

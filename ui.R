@@ -1,6 +1,7 @@
 dig_data <- dig_df
 
 
+# Define UI
 ui <- fluidPage(
   titlePanel("DIG Trial: Data Explorer"),
   sidebarLayout(
