@@ -1,71 +1,21 @@
-#install packages
+# Load necessary libraries if not already loaded
 if (!require("janitor")) install.packages("janitor")
 if (!require("lubridate")) install.packages("lubridate")
 if (!require("shiny")) install.packages("shiny")
 if (!require("tidyverse")) install.packages("tidyverse")
 if (!require("palmerpenguins")) install.packages("palmerpenguins")
-if (!require("DynNom")) install.packages("DynNom")
 if (!require("shinydashboard")) install.packages("shinydashboard")
 
-#Load necessary packages
+# Load necessary packages
 library(janitor)
 library(lubridate)
 library(tidyverse)
 library(shiny)
 library(palmerpenguins)
-library(dplyr)
-library(readr)
-library(dplyr)
-library(forcats)
-library(ggplot2)
-library(reshape2)
-library(shinythemes)
 
-#Import the required data for analysis
+# Import the required data for analysis
 dig_df <- read.csv("DIG.csv") %>%
-  janitor::clean_names()
-dig_df
-
-# Select the specified columns
-selected_columns <- dig_df %>%
-  select(ID, TRTMT, AGE, SEX, BMI, KLEVEL, CREAT, DIABP, SYSBP, HYPERTEN, CVD, WHF, DIG, HOSP, HOSPDAYS, DEATH, DEATHDAY)
-
-# Convert columns to the most relevant data type
-selected_columns$ID <- as.integer(selected_columns$ID)
-selected_columns$TRTMT <- as.integer(selected_columns$TRTMT)
-selected_columns$AGE <- as.integer(selected_columns$AGE)
-selected_columns$SEX <- as.integer(selected_columns$SEX)
-selected_columns$BMI <- as.numeric(selected_columns$BMI)
-selected_columns$KLEVEL <- as.numeric(selected_columns$KLEVEL)
-selected_columns$CREAT <- as.numeric(selected_columns$CREAT)
-selected_columns$DIABP <- as.integer(selected_columns$DIABP)
-selected_columns$SYSBP <- as.integer(selected_columns$SYSBP)
-selected_columns$HYPERTEN <- as.integer(selected_columns$HYPERTEN)
-selected_columns$CVD <- as.integer(selected_columns$CVD)
-selected_columns$WHF <- as.integer(selected_columns$WHF)
-selected_columns$DIG <- as.integer(selected_columns$DIG)
-selected_columns$HOSP <- as.integer(selected_columns$HOSP)
-selected_columns$HOSPDAYS <- as.integer(selected_columns$HOSPDAYS)
-selected_columns$DEATH <- as.integer(selected_columns$DEATH)
-selected_columns$DEATHDAY <- as.integer(selected_columns$DEATHDAY)
-
-# View the data types
-print(selected_columns)
-
-
-
-dig_df$TRTMT <- factor(dig_df$TRTMT, levels = c(0, 1), labels = c("Placebo", "Treatment"))
-dig_df$RACE <- factor(dig_df$RACE, levels = c(1, 2), labels = c("White", "Nonwhite"))
-dig_df$SEX <- factor(dig_df$SEX, levels = c(1, 2), labels = c("Male", "Female"))
-dig_df$HYPERTEN <- factor(dig_df$HYPERTEN, levels = c(0, 1), labels = c("No", "Yes"))
-dig_df$CVD <- factor(dig_df$CVD, levels = c(0, 1), labels = c("No", "Yes"))
-dig_df$DEATH <- factor(dig_df$DEATH, levels = c(0, 1), labels = c("Alive", "Death"))
-dig_df$WHF <- factor(dig_df$WHF, levels = c(0, 1), labels = c("No", "Yes"))
-dig_df$DIG <- factor(dig_df$DIG, levels = c(0, 1), labels = c("No", "Yes"))
-dig_df$HOSP <- factor(dig_df$HOSP, levels = c(0, 1), labels = c("No", "Yes"))
-
-print(dig_df)
-
+  clean_names()
 
 # Define UI
 ui <- fluidPage(
@@ -79,8 +29,7 @@ ui <- fluidPage(
         "Age vs Serum Creatinine",
         "Age vs Heart Rate",
         "Age vs Diastolic BP",
-        "Age vs Systolic BP",
-        "Age vs NYHA Functional Class"
+        "Age vs Systolic BP"
       ))
     ),
     mainPanel(
@@ -128,6 +77,10 @@ server <- function(input, output) {
   })
   
   output$mortalityPlot <- renderPlot({
+    if (!"TRTMT" %in% names(dig_df) || !"DEATH" %in% names(dig_df)) {
+      return(NULL)
+    }
+    
     ggplot(dig_df, aes(x = factor(TRTMT), fill = factor(DEATH))) +
       geom_bar(position = "fill") +
       labs(x = "Treatment Group", y = "Proportion", fill = "Death") +
@@ -135,6 +88,10 @@ server <- function(input, output) {
   })
   
   output$hospitalizationPlot <- renderPlot({
+    if (!"TRTMT" %in% names(dig_df) || !"HOSP" %in% names(dig_df)) {
+      return(NULL)
+    }
+    
     ggplot(dig_df, aes(x = factor(TRTMT), fill = factor(HOSP))) +
       geom_bar(position = "fill") +
       labs(x = "Treatment Group", y = "Proportion", fill = "Hospitalization") +
@@ -142,51 +99,73 @@ server <- function(input, output) {
   })
 
   output$selectedPlot <- renderPlot({
-  plot_data <- switch(input$plotChoice,
-                      "Age vs Ejection Fraction" = {
-                        ggplot(dig_df, aes(x = AGE, y = EJF_PER)) +
-                          geom_point() +
-                          labs(x = "Age", y = "Ejection Fraction", title = "Age vs Ejection Fraction")
-                      },
-                      "Age vs BMI" = {
-                        ggplot(dig_df, aes(x = AGE, y = BMI)) +
-                          geom_point() +
-                          labs(x = "Age", y = "BMI", title = "Age vs BMI")
-                      },
-                      "Age vs Serum Potassium Level" = {
-                        ggplot(dig_df, aes(x = AGE, y = KLEVEL)) +
-                          geom_point() +
-                          labs(x = "Age", y = "Serum Potassium Level", title = "Age vs Serum Potassium Level")
-                      },
-                      "Age vs Serum Creatinine" = {
-                        ggplot(dig_df, aes(x = AGE, y = CREAT)) +
-                          geom_point() +
-                          labs(x = "Age", y = "Serum Creatinine", title = "Age vs Serum Creatinine")
-                      },
-                      "Age vs Heart Rate" = {
-                        ggplot(dig_df, aes(x = AGE, y = HEARTRTE)) +
-                          geom_point() +
-                          labs(x = "Age", y = "Heart Rate", title = "Age vs Heart Rate")
-                      },
-                      "Age vs Diastolic BP" = {
-                        ggplot(dig_df, aes(x = AGE, y = DIABP)) +
-                          geom_point() +
-                          labs(x = "Age", y = "Diastolic BP", title = "Age vs Diastolic BP")
-                      },
-                      "Age vs Systolic BP" = {
-                        ggplot(dig_df, aes(x = AGE, y = SYSBP)) +
-                          geom_point() +
-                          labs(x = "Age", y = "Systolic BP", title = "Age vs Systolic BP")
-                      },
-                      "Age vs NYHA Functional Class" = {
-                        ggplot(dig_df, aes(x = AGE, y = FUNCTCLS)) +
-                          geom_point() +
-                          labs(x = "Age", y = "NYHA Functional Class", title = "Age vs NYHA Functional Class")
-                      }
-  )
-  plot_data
-})
+    if (!input$plotChoice %in% c("Age vs Ejection Fraction", "Age vs BMI", 
+                                 "Age vs Serum Potassium Level", "Age vs Serum Creatinine", 
+                                 "Age vs Heart Rate", "Age vs Diastolic BP", "Age vs Systolic BP")) {
+      return(NULL)
+    }
+    
+    plot_data <- switch(input$plotChoice,
+                        "Age vs Ejection Fraction" = {
+                          if (!"AGE" %in% names(dig_df) || !"EJF_PER" %in% names(dig_df)) {
+                            return(NULL)
+                          }
+                          ggplot(dig_df, aes(x = AGE, y = EJF_PER)) +
+                            geom_point() +
+                            labs(x = "Age", y = "Ejection Fraction", title = "Age vs Ejection Fraction")
+                        },
+                        "Age vs BMI" = {
+                          if (!"AGE" %in% names(dig_df) || !"BMI" %in% names(dig_df)) {
+                            return(NULL)
+                          }
+                          ggplot(dig_df, aes(x = AGE, y = BMI)) +
+                            geom_point() +
+                            labs(x = "Age", y = "BMI", title = "Age vs BMI")
+                        },
+                        "Age vs Serum Potassium Level" = {
+                          if (!"AGE" %in% names(dig_df) || !"KLEVEL" %in% names(dig_df)) {
+                            return(NULL)
+                          }
+                          ggplot(dig_df, aes(x = AGE, y = KLEVEL)) +
+                            geom_point() +
+                            labs(x = "Age", y = "Serum Potassium Level", title = "Age vs Serum Potassium Level")
+                        },
+                        "Age vs Serum Creatinine" = {
+                          if (!"AGE" %in% names(dig_df) || !"CREAT" %in% names(dig_df)) {
+                            return(NULL)
+                          }
+                          ggplot(dig_df, aes(x = AGE, y = CREAT)) +
+                            geom_point() +
+                            labs(x = "Age", y = "Serum Creatinine", title = "Age vs Serum Creatinine")
+                        },
+                        "Age vs Heart Rate" = {
+                          if (!"AGE" %in% names(dig_df) || !"HEARTRTE" %in% names(dig_df)) {
+                            return(NULL)
+                          }
+                          ggplot(dig_df, aes(x = AGE, y = HEARTRTE)) +
+                            geom_point() +
+                            labs(x = "Age", y = "Heart Rate", title = "Age vs Heart Rate")
+                        },
+                        "Age vs Diastolic BP" = {
+                          if (!"AGE" %in% names(dig_df) || !"DIABP" %in% names(dig_df)) {
+                            return(NULL)
+                          }
+                          ggplot(dig_df, aes(x = AGE, y = DIABP)) +
+                            geom_point() +
+                            labs(x = "Age", y = "Diastolic BP", title = "Age vs Diastolic BP")
+                        },
+                        "Age vs Systolic BP" = {
+                          if (!"AGE" %in% names(dig_df) || !"SYSBP" %in% names(dig_df)) {
+                            return(NULL)
+                          }
+                          ggplot(dig_df, aes(x = AGE, y = SYSBP)) +
+                            geom_point() +
+                            labs(x = "Age", y = "Systolic BP", title = "Age vs Systolic BP")
+                        }
+    )
+    plot_data
+  })
+}
 
 # Run the Shiny app
 shinyApp(ui = ui, server = server)
-
