@@ -53,6 +53,3 @@ server <- function(input, output, session) {
     # This can be used to trigger reactive expressions
   })
 }
-
-# Run the app
-shinyApp(ui = ui, server = server)
