@@ -6,7 +6,7 @@ if (!require("palmerpenguins")) install.packages("palmerpenguins")
 if (!require("DynNom")) install.packages("DynNom")
 if (!require("shinydashboard")) install.packages("shinydashboard")
 
-
+#Load necessary package
 library(janitor)
 library(lubridate)
 library(tidyverse)
