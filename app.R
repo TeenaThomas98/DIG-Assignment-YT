@@ -26,6 +26,7 @@ library(shinydashboard)
 library(viridis)
 
 dig_df <- read.csv("DIG.csv")
+data <- read.csv("DIG.csv")
 
 # Convert columns to the most relevant data type
 dig_df <- dig_df %>%
