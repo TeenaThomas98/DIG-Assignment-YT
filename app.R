@@ -149,9 +149,8 @@ ui <- dashboardPage(
                            "Age vs Heart Rate" = "HEARTRTE",
                            "Age vs Diastolic BP" = "DIABP",
                            "Age vs Systolic BP" = "SYSBP",
-                           "Age vs NYHA Functional Class" = "NYHA"
-                         )),
-                         
+                           "Age vs NYHA Functional Class" = "NYHA")
+                         )
                      )
                    ),
                    plotOutput("selectedPlot1")
@@ -159,8 +158,6 @@ ui <- dashboardPage(
                )
                
       ),
-      
-      
       tabPanel("Boxplot/Violin Plot Analysis", 
                fluidRow(
                  box(
@@ -176,14 +173,16 @@ ui <- dashboardPage(
                            "BMI across Sex",
                            "Ejection Fraction across Race",
                            "Serum Creatinine across Previous MI",
-                           "Serum Creatinine across Diabetes"
+                           "Serum Creatinine across Diabetes")
                          )
-                         )
-                     ),plotOutput("selectedPlot2")
-                   )
+                     )
+                   ),
+                   plotOutput("selectedPlot2")
                  )
                )
       )#tabPanel Plot Analysis
+      
+      
     )#tabBox
   )#dashboardBody
 )#ui
@@ -240,10 +239,7 @@ server <- function(input, output, session) {
   
   
   
-  # Refresh action
-  observeEvent(input$refresh, {
-    # can be used to trigger reactive expressions
-  })
+  
   
   #selectedPlot1
   output$selectedPlot1 <- renderPlot({
@@ -295,6 +291,25 @@ server <- function(input, output, session) {
   
   
   #selectedPlot2
+  output$summaryTable <- renderDataTable({
+    head(dig_df)
+  })
+  
+  output$mortalityPlot <- renderPlot({
+    ggplot(dig_df, aes(x = factor(TRTMT), fill = factor(DEATH))) +
+      geom_bar(position = "fill") +
+      labs(x = "Treatment Group", y = "Proportion", fill = "Death") +
+      scale_fill_brewer(palette = "Set1")
+  })
+  
+  output$hospitalizationPlot <- renderPlot({
+    ggplot(dig_df, aes(x = factor(TRTMT), fill = factor(HOSP))) +
+      geom_bar(position = "fill") +
+      labs(x = "Treatment Group", y = "Proportion", fill = "Hospitalization") +
+      scale_fill_brewer(palette = "Set1")
+  })
+  
+  
   output$selectedPlot2 <- renderPlot({
     plot_data <- switch(input$plotChoice,
                         "Age vs Ejection Fraction" = {
@@ -376,6 +391,13 @@ server <- function(input, output, session) {
     )
     plot_data
   })
+  
+  
+  
+  # Refresh action
+  observeEvent(input$refresh, {
+    # can be used to trigger reactive expressions
+  }) 
   
   
 }
