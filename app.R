@@ -135,26 +135,29 @@ ui <- dashboardPage(
                fluidRow(
                  box(
                    width = 12,
-                   id = "tabs",
-                   tabPanel("Scatterplot Analysis", 
-                            fluidRow(
-                              box(width = 12, status = "primary", solidHeader = TRUE, 
-                                  selectInput("plotChoice", "Choose Scatterplot", choices = c(
-                                    "Age vs Ejection Fraction" = "EJF_PER",
-                                    "Age vs BMI" = "BMI",
-                                    "Age vs Serum Potassium Level" = "KLEVEL",
-                                    "Age vs Serum Creatinine" = "CREAT",
-                                    "Age vs Heart Rate" = "HEARTRTE",
-                                    "Age vs Diastolic BP" = "DIABP",
-                                    "Age vs Systolic BP" = "SYSBP",
-                                    "Age vs NYHA Functional Class" = "NYHA"
-                                  )),
-                                  plotOutput("selectedPlot1")
-                              )
-                            )
-                   )
+                   title = "Scatterplot Analysis",
+                   collapsible = TRUE,
+                   status = "primary", 
+                   solidHeader = TRUE, 
+                   fluidRow(
+                     box(width = 12, status = "primary", solidHeader = TRUE, 
+                         selectInput("plotChoice", "Choose Scatterplot", choices = c(
+                           "Age vs Ejection Fraction" = "EJF_PER",
+                           "Age vs BMI" = "BMI",
+                           "Age vs Serum Potassium Level" = "KLEVEL",
+                           "Age vs Serum Creatinine" = "CREAT",
+                           "Age vs Heart Rate" = "HEARTRTE",
+                           "Age vs Diastolic BP" = "DIABP",
+                           "Age vs Systolic BP" = "SYSBP",
+                           "Age vs NYHA Functional Class" = "NYHA"
+                         )),
+                         
+                     )
+                   ),
+                   plotOutput("selectedPlot1")
                  )
                )
+               
       ),
       
       
@@ -162,26 +165,29 @@ ui <- dashboardPage(
                fluidRow(
                  box(
                    width = 12,
-                   id = "tabs",
-                   tabPanel("Boxplot/Violin Plot Analysis", 
-                            fluidRow(
-                              box(width = 12, status = "primary", solidHeader = TRUE, 
-                                  selectInput("plotChoice", "Choose Plot", choices = c(
-                                    "Ejection Fraction across NYHA Functional Class",
-                                    "BMI across Sex",
-                                    "Ejection Fraction across Race",
-                                    "Serum Creatinine across Previous MI",
-                                    "Serum Creatinine across Diabetes"
-                                  )),
-                                  plotOutput("selectedPlot2")
-                              )
-                            )
+                   title = "Boxplot/Violin Plot Analysis",
+                   collapsible = TRUE,
+                   status = "primary", 
+                   solidHeader = TRUE,
+                   fluidRow(
+                     box(width = 12, status = "primary", solidHeader = TRUE, 
+                         selectInput("plotChoice", "Choose Plot", choices = c(
+                           "Ejection Fraction across NYHA Functional Class",
+                           "BMI across Sex",
+                           "Ejection Fraction across Race",
+                           "Serum Creatinine across Previous MI",
+                           "Serum Creatinine across Diabetes"
+                         )
+                         )
+                     ),plotOutput("selectedPlot2")
                    )
                  )
-               ),
-      )     
-    )
-  ))
+               )
+      )#tabPanel Plot Analysis
+    )#tabBox
+  )#dashboardBody
+)#ui
+
 
 # Server Definition
 server <- function(input, output, session) {
