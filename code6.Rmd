@@ -167,7 +167,29 @@ ui <- dashboardPage(
                  )
                )
 
-        )
+        ),
+      tabPanel("DIG Trial Analysis", 
+               fluidRow(
+                 box(width=12, 
+                     title = "Summary of Patients by Treatment Group", 
+                     collapsible = TRUE, 
+                     status = "primary", 
+                     solidHeader = TRUE,
+                     tableOutput("summary_table")),
+                 box(width=12, 
+                     title = "Mortality Analysis", 
+                     collapsible = TRUE, 
+                     status = "primary", 
+                     solidHeader = TRUE,
+                     tableOutput("mortality_summary")),
+                 box(width=12, 
+                     title = "Hospitalization Analysis", 
+                     collapsible = TRUE, 
+                     status = "primary", 
+                     solidHeader = TRUE,
+                     tableOutput("hospitalization_summary")),
+               )
+      )
     )
   )
 )
@@ -316,6 +338,35 @@ server <- function(input, output, session) ({
           labs(x = "Age", y = "NYHA Functional Class", title = "Age vs NYHA Functional Class")
       }
     )#switch
+  })
+
+  
+#three table about DIG Trial Analysis
+  output$summary_table <- renderTable({
+    treatment_summary <- dig_df %>%
+      group_by(TRTMT) %>%
+      summarise(Count = n()) %>%
+      mutate(Proportion = Count / sum(Count))
+    
+    treatment_summary
+  })
+  
+  output$mortality_summary <- renderTable({
+    mortality_summary <- dig_df %>%
+      group_by(TRTMT, DEATH) %>%
+      summarise(Count = n()) %>%
+      mutate(Proportion = Count / sum(Count))
+    
+    mortality_summary
+  })
+  
+  output$hospitalization_summary <- renderTable({
+    hospitalization_summary <- dig_df %>%
+      group_by(TRTMT, HOSP) %>%
+      summarise(Count = n()) %>%
+      mutate(Proportion = Count / sum(Count))
+    
+    hospitalization_summary
   })
   
   
