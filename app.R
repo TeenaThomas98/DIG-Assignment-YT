@@ -9,7 +9,6 @@ if (!require("shinydashboard")) install.packages("shinydashboard")
 if (!require("DT")) install.packages("DT")
 if (!require("viridis")) install.packages("viridis")
 
-
 library(janitor)
 library(lubridate)
 library(tidyverse)

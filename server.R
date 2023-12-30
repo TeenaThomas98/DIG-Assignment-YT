@@ -161,5 +161,32 @@ server <- function(input, output, session) ({
   })
   
   
+  #three table about DIG Trial Analysis
+  output$summary_table <- renderTable({
+    treatment_summary <- dig_df %>%
+      group_by(TRTMT) %>%
+      summarise(Count = n()) %>%
+      mutate(Proportion = Count / sum(Count))
+    
+    treatment_summary
+  })
   
-}) 
+  output$mortality_summary <- renderTable({
+    mortality_summary <- dig_df %>%
+      group_by(TRTMT, DEATH) %>%
+      summarise(Count = n()) %>%
+      mutate(Proportion = Count / sum(Count))
+    
+    mortality_summary
+  })
+  
+  output$hospitalization_summary <- renderTable({
+    hospitalization_summary <- dig_df %>%
+      group_by(TRTMT, HOSP) %>%
+      summarise(Count = n()) %>%
+      mutate(Proportion = Count / sum(Count))
+    
+    hospitalization_summary
+  })
+  
+  })

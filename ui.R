@@ -95,7 +95,29 @@ ui <- dashboardPage(
                  )
                )
                
+      ),
+      tabPanel("DIG Trial Analysis", 
+               fluidRow(
+                 box(width=12, 
+                     title = "Summary of Patients by Treatment Group", 
+                     collapsible = TRUE, 
+                     status = "primary", 
+                     solidHeader = TRUE,
+                     tableOutput("summary_table")),
+                 box(width=12, 
+                     title = "Mortality Analysis", 
+                     collapsible = TRUE, 
+                     status = "primary", 
+                     solidHeader = TRUE,
+                     tableOutput("mortality_summary")),
+                 box(width=12, 
+                     title = "Hospitalization Analysis", 
+                     collapsible = TRUE, 
+                     status = "primary", 
+                     solidHeader = TRUE,
+                     tableOutput("hospitalization_summary")),
+               )
       )
     )
   )
-)S
+)
