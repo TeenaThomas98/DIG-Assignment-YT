@@ -134,11 +134,10 @@ ui <- dashboardPage(
                      verbatimTextOutput("statSummary"))
                )
       ),
-      # Add additional tabs for your new plots here
-      tabPanel("Additional Plots",
+      tabPanel("Boxplot Plot Analysis",
                fluidRow(
                  box(width = 12, status = "primary", solidHeader = TRUE,
-                     selectInput("additionalPlotChoice", "Choose Additional Plot", choices = c(
+                     selectInput("additionalPlotChoice", "Choose Boxplot Plot", choices = c(
                        "Ejection Fraction across NYHA Functional Class",
                        "BMI across Sex",
                        "Ejection Fraction across Race",
@@ -148,7 +147,23 @@ ui <- dashboardPage(
                      plotOutput("selectedAdditionalPlot")
                  )
                )
-      )
+      ),
+      # tabPanel("Boxplot Plot Analysis",
+      #          fluidRow(
+      #            box(width = 12, status = "primary", solidHeader = TRUE,
+      #                selectInput("additionalPlotChoice", "Choose Boxplot Plot", choices = c(
+      #                  "Ejection Fraction across NYHA Functional Class",
+      #                  "BMI across Sex",
+      #                  "Ejection Fraction across Race",
+      #                  "Serum Creatinine across Previous MI",
+      #                  "Serum Creatinine across Diabetes"
+      #                )),
+      #                plotOutput("selectedAdditionalPlot")
+      #            )
+      #          )
+      # ),      
+      
+      
     )
   )
 )
@@ -229,19 +244,19 @@ dig_df <- read.csv("DIG.csv")
         ggplot(selected_data, aes(x = SEX, y = BMI)) +
           geom_boxplot() +
           labs(x = "Sex", y = "BMI", title = "BMI across Sex")
-      }
+      },
       "Ejection Fraction across Race" = {
         selected_data$RACE <- factor(selected_data$RACE, labels = c("White", "Non-White"))
         ggplot(selected_data, aes(x = RACE, y = EJF_PER)) +
           geom_boxplot() +
           labs(x = "Race", y = "Ejection Fraction", title = "Ejection Fraction across Race")
-      }  
+      },  
       "Serum Creatinine across Previous MI" = {
         selected_data$PREVMI <- label_prevmi(selected_data$PREVMI)
         ggplot(selected_data, aes(x = PREVMI, y = CREAT)) +
           geom_boxplot() +
           labs(x = "Previous MI", y = "Serum Creatinine", title = "Serum Creatinine across Previous MI")
-      }
+      },
       "Serum Creatinine across Diabetes" = {
         selected_data$SEX <- label_diabetes(selected_data$DIABETES)
         ggplot(selected_data, aes(x = DIABETES, y = CREAT)) +
