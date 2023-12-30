@@ -27,7 +27,6 @@ library(viridis)
 
 dig_df <- read.csv("DIG.csv")
 data <- read.csv("DIG.csv")
-
 # Convert columns to the most relevant data type
 dig_df <- dig_df %>%
   mutate(
@@ -58,9 +57,10 @@ dig_df$DEATH <- factor(dig_df$DEATH, levels = c(0, 1), labels = c("Alive", "Deat
 dig_df$WHF <- factor(dig_df$WHF, levels = c(0, 1), labels = c("No", "Yes"))
 dig_df$DIG <- factor(dig_df$DIG, levels = c(0, 1), labels = c("No", "Yes"))
 dig_df$HOSP <- factor(dig_df$HOSP, levels = c(0, 1), labels = c("No", "Yes"))
-
+print(dig_df)
 
 dig_data <- dig_df
+
 
 
 

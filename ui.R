@@ -1,10 +1,26 @@
-# UI Definition
-data <- read.csv("DIG.csv")
+# Function to label categorical variables
+label_prevmi <- function(x) {
+  ifelse(x == 1, "Previous MI", "No Previous MI")
+}
+
+label_diabetes <- function(x) {
+  ifelse(x == 1, "Diabetes", "No Diabetes")
+}
+
+label_medication <- function(x) {
+  ifelse(x == 0, "No Medication", "Medication Used")
+}
+
+label_nyha <- function(x) {
+  factor(x, levels = c(1, 2, 3, 4), labels = c("Class I", "Class II", "Class III", "Class IV"))
+}
+
+# Define UI
 ui <- dashboardPage(
   dashboardHeader(title = "DIG Data Analysis"),
   dashboardSidebar(
-    radioButtons(inputId = "sex", label = "Select Patient Sex:", choices = c("All", "Male", "Female")),
-    selectInput(inputId = "treatment_group", label = "Select Treatment Group:", choices = c("All", "Placebo", "Treatment"), multiple = FALSE),
+    radioButtons(inputId = "sex", label = "Select Patient Sex:", choices = c("All", "Male(1)", "Female(2)")),
+    selectInput(inputId = "treatment_group", label = "Select Treatment Group:", choices = c("All", "Placebo(0)", "Treatment(1)"), multiple = FALSE),
     sliderInput("age_range", "Select Age Range:", min = 0, max = 100, value = c(20, 40)),
     checkboxGroupInput(inputId = "variables", label = "Select Variables to Display:", choices = c("AGE", "SEX", "BMI", "TRTMT"), selected = c("AGE", "SEX", "BMI", "TRTMT")),
     actionButton("refresh", "Refresh Data")
@@ -45,58 +61,41 @@ ui <- dashboardPage(
                      verbatimTextOutput("statSummary"))
                )
       ),
-      tabPanel("Scatterplot Analysis", 
+      tabPanel("Boxplot Plot Analysis",
                fluidRow(
-                 box(
-                   width = 12,
-                   title = "Scatterplot Analysis",
-                   collapsible = TRUE,
-                   status = "primary", 
-                   solidHeader = TRUE, 
-                   fluidRow(
-                     box(width = 12, status = "primary", solidHeader = TRUE, 
-                         selectInput("plotChoice", "Choose Scatterplot", choices = c(
-                           "Age vs Ejection Fraction" = "EJF_PER",
-                           "Age vs BMI" = "BMI",
-                           "Age vs Serum Potassium Level" = "KLEVEL",
-                           "Age vs Serum Creatinine" = "CREAT",
-                           "Age vs Heart Rate" = "HEARTRTE",
-                           "Age vs Diastolic BP" = "DIABP",
-                           "Age vs Systolic BP" = "SYSBP",
-                           "Age vs NYHA Functional Class" = "NYHA")
-                         )
-                     )
-                   ),
-                   plotOutput("selectedPlot1")
+                 box(width = 12, status = "primary", solidHeader = TRUE,
+                     selectInput("additionalPlotChoice", "Choose Boxplot Plot", choices = c(
+                       "Ejection Fraction across NYHA Functional Class",
+                       "BMI across Sex",
+                       "Ejection Fraction across Race",
+                       "Serum Creatinine across Previous MI",
+                       "Serum Creatinine across Diabetes"
+                     )),
+                     plotOutput("selectedAdditionalPlot")
+                 )
+               )
+      ),
+      
+      
+      
+      tabPanel("Scatterplot Analysis",
+               fluidRow(
+                 box(width = 12, status = "primary", solidHeader = TRUE,
+                     selectInput("scatterPlotChoice", "Choose Scatterplot", choices = c(
+                       "Age vs Ejection Fraction",
+                       "Age vs BMI",
+                       "Age vs Serum Potassium Level",
+                       "Age vs Serum Creatinine",
+                       "Age vs Heart Rate",
+                       "Age vs Diastolic BP",
+                       "Age vs Systolic BP",
+                       "Age vs NYHA Functional Class"                     
+                     )),
+                     plotOutput("selectedScatterPlot")
                  )
                )
                
-      ),
-      tabPanel("Boxplot/Violin Plot Analysis", 
-               fluidRow(
-                 box(
-                   width = 12,
-                   title = "Boxplot/Violin Plot Analysis",
-                   collapsible = TRUE,
-                   status = "primary", 
-                   solidHeader = TRUE,
-                   fluidRow(
-                     box(width = 12, status = "primary", solidHeader = TRUE, 
-                         selectInput("plotChoice", "Choose Plot", choices = c(
-                           "Ejection Fraction across NYHA Functional Class",
-                           "BMI across Sex",
-                           "Ejection Fraction across Race",
-                           "Serum Creatinine across Previous MI",
-                           "Serum Creatinine across Diabetes")
-                         )
-                     )
-                   ),
-                   plotOutput("selectedPlot2")
-                 )
-               )
-      )#tabPanel Plot Analysis
-      
-      
-    )#tabBox
-  )#dashboardBody
-)#ui
+      )
+    )
+  )
+)S
