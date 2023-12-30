@@ -49,7 +49,7 @@ This project is a collaborative effort by Yunjie Luo and Teena Thomas. Contribut
 
 For any queries or suggestions, please contact .
 Yunjie Luo: 1249354609@qq.com
-Teena Thomas: 
+Teena Thomas: thomas.teena1998@gmail.com
 
 ## Acknowledgments
 
